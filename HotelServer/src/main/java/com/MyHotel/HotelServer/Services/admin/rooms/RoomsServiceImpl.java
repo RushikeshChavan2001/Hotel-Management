@@ -5,6 +5,7 @@ import com.MyHotel.HotelServer.dto.RoomsResponseDto;
 import com.MyHotel.HotelServer.entity.Room;
 import com.MyHotel.HotelServer.repository.RoomRepository;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -71,6 +72,18 @@ public class RoomsServiceImpl implements  RoomsService {
             return true;
         }
         return  false;
+    }
+
+
+
+    public void deleteRoom(Long id){
+        Optional<Room> optionalRoom= roomRepository.findById(id);
+
+        if(optionalRoom.isPresent()){
+            roomRepository.deleteById(id);
+        }else{
+            throw new EntityNotFoundException("Room Not Found ");
+        }
     }
 
 }

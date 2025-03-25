@@ -45,31 +45,31 @@ public class ReservationServiceImpl implements  ReservationService{
 
     }
 
-    public boolean changeReservationStatus(Long id, String status){
+        public boolean changeReservationStatus(Long id, String status){
 
-        Optional<Reservation> optionalReservation= reservationRepository.findById(id);
+            Optional<Reservation> optionalReservation= reservationRepository.findById(id);
 
-        if (optionalReservation.isPresent()){
-            Reservation existingReservation = optionalReservation.get();
+            if (optionalReservation.isPresent()){
+                Reservation existingReservation = optionalReservation.get();
 
-            if(Objects.equals(status, "Approve")){
-                existingReservation.setReservationStatus(ReservationStatus.APPROVE);
-            }else{
-                existingReservation.setReservationStatus(ReservationStatus.REJECTED);
+                if(Objects.equals(status, "APPROVE")){
+                    existingReservation.setReservationStatus(ReservationStatus.APPROVE);
+                }else{
+                    existingReservation.setReservationStatus(ReservationStatus.REJECTED);
+                }
+
+                reservationRepository.save(existingReservation);
+                Room existingRoom = existingReservation.getRoom();
+
+                existingRoom.setAvailable(false);
+
+                roomRepository.save(existingRoom);
+
+                return  true;
+
             }
-
-            reservationRepository.save(existingReservation);
-            Room existingRoom = existingReservation.getRoom();
-
-            existingRoom.setAvailable(false);
-
-            roomRepository.save(existingRoom);
-
-            return  true;
-
+            return  false;
         }
-        return  false;
-    }
 
 
 

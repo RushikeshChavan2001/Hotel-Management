@@ -1,6 +1,7 @@
 package com.MyHotel.HotelServer.Services.customer.booking;
 
 import com.MyHotel.HotelServer.dto.ReservationDto;
+import com.MyHotel.HotelServer.dto.ReservationResponseDto;
 import com.MyHotel.HotelServer.entity.Reservation;
 import com.MyHotel.HotelServer.entity.Room;
 import com.MyHotel.HotelServer.entity.User;
@@ -9,6 +10,9 @@ import com.MyHotel.HotelServer.repository.ReservationRepository;
 import com.MyHotel.HotelServer.repository.RoomRepository;
 import com.MyHotel.HotelServer.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +28,9 @@ public class BookingServiceImpl implements  BookingService {
     private final RoomRepository roomRepository;
 
     private final ReservationRepository reservationRepository;
+
+
+    public static final int  SEARCH_RESULT_PER_PAGE = 4 ;
 
     public boolean postReservation(ReservationDto reservationDto){
 
@@ -50,6 +57,24 @@ public class BookingServiceImpl implements  BookingService {
 
         }
         return false;
+    }
+
+
+    public ReservationResponseDto getAllReservationByUserId(Long userId, int pageNumber){
+        Pageable pageable = PageRequest.of(pageNumber, SEARCH_RESULT_PER_PAGE);
+
+        Page<Reservation> reservationPage = reservationRepository.findAllByUserId(pageable, userId);
+
+        ReservationResponseDto reservationResponseDto= new ReservationResponseDto();
+
+        reservationResponseDto.setReservationDto(reservationPage.stream().map(Reservation::getReservationDto).toList());
+
+        reservationResponseDto.setPageNumber(reservationPage.getPageable().getPageNumber());
+
+        reservationResponseDto.setTotalPage(reservationPage.getTotalPages());
+
+        return reservationResponseDto;
+
     }
 
 
